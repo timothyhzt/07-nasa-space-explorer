@@ -5,22 +5,39 @@
   padding: 0;
 }
 
+:root {
+  --space-black: #050b18;
+  --space-navy: #0b1730;
+  --panel-navy: #101f3d;
+  --nasa-blue: #4da3ff;
+  --nasa-blue-dark: #1769aa;
+  --nasa-red: #e63946;
+  --text-light: #f4f7fb;
+  --text-muted: #b8c5d6;
+  --border: rgba(184, 197, 214, 0.24);
+  --shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+}
+
 /* Base page styles */
 body {
+  min-height: 100vh;
   font-family: Arial, sans-serif;
-  color: #172033;
-  background: #e9eef5;
-  padding: 20px;
+  color: var(--text-light);
+  background: var(--space-black);
+  background-image: radial-gradient(circle at top, #142954 0, var(--space-black) 48%);
+  padding: 16px;
 }
 
 /* Centered container */
 .container {
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  background: #ffffff;
-  border-top: 6px solid #d71920;
-  padding: 0 24px 24px;
-  box-shadow: 0 8px 24px rgba(23, 32, 51, 0.12);
+  background: rgba(11, 23, 48, 0.94);
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--nasa-red);
+  padding: 0 16px 24px;
+  box-shadow: var(--shadow);
 }
 
 /* Header */
@@ -28,21 +45,22 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  margin-bottom: 20px;
+  gap: 14px;
+  padding: 24px 0;
+  margin-bottom: 8px;
 }
 
 h1 {
-  font-family: Verdana, sans-serif;
+  font-family: Georgia, serif;
   font-weight: bold;
-  color: #172033;
+  color: var(--text-light);
+  letter-spacing: 0;
 }
 
 /* Logo */
 .logo {
-  width: 140px;
-  margin-right: 15px;
+  width: 110px;
+  margin-right: 0;
 }
 
 /* Date‐picker & button row */
@@ -51,13 +69,14 @@ h1 {
   flex-direction: column;
   gap: 10px;
   justify-content: center;
-  margin-bottom: 20px;
-  padding: 0 20px;
+  margin-bottom: 24px;
+  padding: 0;
   align-items: center;
 }
 
 .filters label {
   font-weight: bold;
+  color: var(--text-muted);
 }
 
 /* Inputs and buttons */
@@ -65,23 +84,36 @@ input[type="date"],
 button {
   font-family: Arial, sans-serif;
   font-weight: normal;
-  color: #172033;
+  color: var(--text-light);
   padding: 10px 15px;
-  border: 1px solid #9aa8bb;
+  border: 1px solid var(--border);
   border-radius: 4px;
   font-size: 16px;
   line-height: 1.4;
   width: 100%;
 }
 
+input[type="date"] {
+  background: var(--space-navy);
+  color-scheme: dark;
+}
+
+input[type="date"]:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--nasa-blue);
+  outline-offset: 2px;
+}
+
 /* Button specific */
 button {
-  background-color: #0b3d91;
-  color: white;
+  background-color: var(--nasa-blue-dark);
+  color: var(--text-light);
+  border-color: var(--nasa-blue);
   cursor: pointer;
 }
 button:hover {
-  background-color: #082f70;
+  background-color: var(--nasa-blue);
+  color: var(--space-black);
 }
 button:disabled {
   cursor: wait;
@@ -99,6 +131,10 @@ button:disabled {
   button {
     width: auto;
   }
+
+  .filters label:not(:first-child) {
+    margin-left: 10px;
+  }
 }
 
 /* Gallery flex container */
@@ -106,7 +142,7 @@ button:disabled {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  padding: 20px;
+  padding: 24px 0;
   justify-content: center;
 }
 
@@ -115,10 +151,11 @@ button:disabled {
   flex: 1 1 100%;  /* full width by default */
   min-width: 280px;
   max-width: 500px;
-  background: white;
+  background: var(--panel-navy);
   padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -129,8 +166,8 @@ button:disabled {
 .gallery-item:hover,
 .gallery-item:focus-visible {
   transform: translateY(-4px);
-  box-shadow: 0 8px 18px rgba(23, 32, 51, 0.2);
-  outline: 3px solid #4d9de0;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.35);
+  outline: 3px solid var(--nasa-blue);
   outline-offset: 2px;
 }
 
@@ -161,11 +198,12 @@ button:disabled {
 
 .gallery-item h2 {
   font-size: 18px;
-  color: #0b3d91;
+  color: var(--text-light);
 }
 
 .gallery-item p {
   font-size: 14px;
+  color: var(--text-muted);
 }
 
 /* Placeholder content */
@@ -173,7 +211,7 @@ button:disabled {
   flex: 1 1 100%;
   text-align: center;
   padding: 40px;
-  color: #666;
+  color: var(--text-muted);
 }
 
 .placeholder-icon {
@@ -182,16 +220,22 @@ button:disabled {
 }
 
 .fact-section {
-  margin: 10px 20px 0;
+  margin: 10px 0 0;
   padding: 18px 20px;
-  border-left: 5px solid #d71920;
-  background: #eef5fc;
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--nasa-red);
+  background: rgba(16, 31, 61, 0.9);
 }
 
 .fact-section h2 {
   margin-bottom: 6px;
-  color: #0b3d91;
+  color: var(--nasa-blue);
   font-size: 20px;
+}
+
+.fact-section p {
+  color: var(--text-muted);
+  line-height: 1.5;
 }
 
 .status-message {
@@ -199,18 +243,20 @@ button:disabled {
   padding: 30px;
   text-align: center;
   font-weight: bold;
+  color: var(--text-muted);
 }
 
 .error-message {
-  color: #9d151b;
-  background: #fff1f1;
+  color: #ffb4ba;
+  background: rgba(230, 57, 70, 0.12);
+  border: 1px solid rgba(230, 57, 70, 0.45);
 }
 
 .video-preview {
   height: 200px;
   display: grid;
   place-items: center;
-  background: #172033;
+  background: var(--space-black);
   color: #ffffff;
   font-size: 48px;
 }
@@ -235,8 +281,9 @@ button:disabled {
   max-height: 90vh;
   overflow: auto;
   padding: 24px;
-  background: #ffffff;
-  border-top: 6px solid #d71920;
+  background: var(--panel-navy);
+  border: 1px solid var(--border);
+  border-top: 6px solid var(--nasa-red);
 }
 
 .modal-content img {
@@ -244,7 +291,7 @@ button:disabled {
   width: 100%;
   max-height: 55vh;
   object-fit: contain;
-  background: #172033;
+  background: var(--space-black);
 }
 
 .modal-details {
@@ -252,12 +299,20 @@ button:disabled {
 }
 
 .modal-details h2 {
-  color: #0b3d91;
+  color: var(--text-light);
 }
 
 .modal-details p {
   margin-top: 10px;
+  color: var(--text-muted);
   line-height: 1.6;
+}
+
+.modal-details a {
+  display: inline-block;
+  margin-top: 16px;
+  color: var(--nasa-blue);
+  font-weight: bold;
 }
 
 .close-modal {
@@ -268,7 +323,27 @@ button:disabled {
   width: auto;
   padding: 4px 12px;
   border: 0;
-  background: #d71920;
+  background: var(--nasa-red);
   font-size: 28px;
   line-height: 1;
+}
+
+@media (max-width: 599px) {
+  .site-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .modal-content {
+    padding: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

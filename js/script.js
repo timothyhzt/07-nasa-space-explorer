@@ -43,13 +43,13 @@ async function getSpaceImages() {
 		const response = await fetch(requestUrl);
 
 		if (!response.ok) {
-			throw new Error('NASA could not return photos for those dates.');
+			throw new Error(getApiErrorMessage(response));
 		}
 
 		const apodEntries = await response.json();
 		currentEntries = Array.isArray(apodEntries) ? apodEntries : [apodEntries];
 
-		if (currentEntries.some((entry) => entry.title === 'NASA Science' && entry.url.includes('nasa-logo'))) {
+		if (currentEntries.some((entry) => entry.title === 'NASA Science' && entry.url?.includes('nasa-logo'))) {
 			throw new Error('NASA returned a fallback page instead of APOD images. Try again or use a personal API key.');
 		}
 
@@ -89,7 +89,7 @@ async function loadLatestAvailableImages() {
 		const response = await fetch(`${apiUrl}?api_key=${apiKey}`);
 
 		if (!response.ok) {
-			throw new Error('NASA could not provide the latest APOD date.');
+			throw new Error(getApiErrorMessage(response));
 		}
 
 		const latestEntry = await response.json();
@@ -109,6 +109,22 @@ async function loadLatestAvailableImages() {
 	} finally {
 		getImagesButton.disabled = false;
 	}
+}
+
+function getApiErrorMessage(response) {
+	if (response.status === 429) {
+		return 'NASA API rate limit reached. Replace DEMO_KEY with your personal NASA API key.';
+	}
+
+	if (response.status === 403) {
+		return 'NASA rejected this API key. Check that your NASA API key is correct.';
+	}
+
+	if (response.status === 503) {
+		return 'NASA is temporarily unavailable (503). Wait a few minutes and try again.';
+	}
+
+	return `NASA returned an error (${response.status}).`;
 }
 
 loadLatestAvailableImages();
