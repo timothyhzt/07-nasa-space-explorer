@@ -294,6 +294,27 @@ button:disabled {
   background: var(--space-black);
 }
 
+.modal-content video {
+  display: block;
+  width: 100%;
+  max-height: 55vh;
+  background: var(--space-black);
+}
+
+.modal-content iframe {
+  display: block;
+  width: 100%;
+  min-height: 400px;
+  border: 0;
+  background: var(--space-black);
+}
+
+.modal-content img[hidden],
+.modal-content video[hidden],
+.modal-content iframe[hidden] {
+  display: none;
+}
+
 .modal-details {
   padding-top: 18px;
 }

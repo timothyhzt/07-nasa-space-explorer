@@ -6,12 +6,14 @@ const spaceFact = document.getElementById('spaceFact');
 const imageModal = document.getElementById('imageModal');
 const closeModalButton = document.getElementById('closeModal');
 const modalImage = document.getElementById('modalImage');
+const modalVideo = document.getElementById('modalVideo');
+const modalVideoFrame = document.getElementById('modalVideoFrame');
 const modalTitle = document.getElementById('modalTitle');
 const modalDate = document.getElementById('modalDate');
 const modalExplanation = document.getElementById('modalExplanation');
 const modalVideoLink = document.getElementById('modalVideoLink');
-const apiUrl = 'https://api.nasa.gov/planetary/apod';
-const apiKey = 'DEMO_KEY';
+const apiUrl = 'https://science.nasa.gov/wp-json/wp/v2/apod-basic';
+const apiKey = 'Demo_Key'; // Replace with your personal NASA API key for higher rate limits
 const spaceFacts = [
 	'A day on Venus is longer than a year on Venus.',
 	'Neutron stars can spin around 600 times every second.',
@@ -72,7 +74,7 @@ function renderGallery(apodEntries) {
 		}
 
 		return `<article class="gallery-item" data-entry-index="${apodEntries.indexOf(entry)}" tabindex="0">
-			<img src="${entry.url}" alt="${entry.title}" />
+			<img src="${entry.hdurl || entry.url}" alt="${entry.title}" />
 			<h2>${entry.title}</h2>
 			<p>${entry.date}</p>
 		</article>`;
@@ -80,36 +82,6 @@ function renderGallery(apodEntries) {
 }
 
 getImagesButton.addEventListener('click', getSpaceImages);
-
-async function loadLatestAvailableImages() {
-	gallery.innerHTML = '<p class="status-message">🔄 Loading space photos...</p>';
-	getImagesButton.disabled = true;
-
-	try {
-		const response = await fetch(`${apiUrl}?api_key=${apiKey}`);
-
-		if (!response.ok) {
-			throw new Error(getApiErrorMessage(response));
-		}
-
-		const latestEntry = await response.json();
-
-		if (!latestEntry.date) {
-			throw new Error('NASA did not return a valid latest APOD date.');
-		}
-
-		const latestDate = new Date(`${latestEntry.date}T00:00:00`);
-		const firstDate = new Date(latestDate);
-		firstDate.setDate(latestDate.getDate() - 8);
-		startInput.value = firstDate.toISOString().split('T')[0];
-		endInput.value = latestEntry.date;
-		await getSpaceImages();
-	} catch (error) {
-		gallery.innerHTML = `<p class="status-message error-message">${error.message} Check your NASA API key or try again later.</p>`;
-	} finally {
-		getImagesButton.disabled = false;
-	}
-}
 
 function getApiErrorMessage(response) {
 	if (response.status === 429) {
@@ -127,30 +99,88 @@ function getApiErrorMessage(response) {
 	return `NASA returned an error (${response.status}).`;
 }
 
-loadLatestAvailableImages();
-
-function openModal(entry) {
+async function openModal(entry) {
 	modalTitle.textContent = entry.title;
 	modalDate.textContent = entry.date;
-	modalExplanation.textContent = entry.explanation || 'NASA did not provide an explanation for this entry.';
+	modalExplanation.textContent = getPlainText(entry.explanation) || 'NASA did not provide an explanation for this entry.';
+	modalVideo.pause();
+	modalVideo.removeAttribute('src');
+	modalVideo.load();
+	modalVideo.hidden = true;
+	modalVideoFrame.removeAttribute('src');
+	modalVideoFrame.hidden = true;
+	modalVideoLink.href = entry.url;
+	modalVideoLink.hidden = true;
 
 	if (entry.media_type === 'video') {
 		modalImage.hidden = true;
-		modalVideoLink.href = entry.url;
-		modalVideoLink.hidden = false;
+		const videoSource = getVideoSource(entry);
+
+		if (videoSource) {
+			modalVideo.src = videoSource;
+			modalVideo.hidden = false;
+		} else if (getVideoEmbed(entry)) {
+			modalVideoFrame.src = getVideoEmbed(entry);
+			modalVideoFrame.hidden = false;
+		} else {
+			modalVideoLink.hidden = false;
+		}
 	} else {
 		modalImage.src = entry.hdurl || entry.url;
 		modalImage.alt = entry.title;
 		modalImage.hidden = false;
-		modalVideoLink.hidden = true;
 	}
 
 	imageModal.hidden = false;
 	closeModalButton.focus();
 }
 
+function getVideoSource(entry) {
+	if (!entry.basic_html) {
+		return '';
+	}
+
+	const sourceMatch = entry.basic_html.match(/<source[^>]+src=["']([^"']+)["']/i);
+	return sourceMatch ? sourceMatch[1] : '';
+}
+
+function getVideoEmbed(entry) {
+	if (!entry.basic_html) {
+		return '';
+	}
+
+	const frameMatch = entry.basic_html.match(/<iframe[^>]+src=["']([^"']+)["']/i);
+	if (!frameMatch) {
+		return '';
+	}
+
+	const embedUrl = new URL(frameMatch[1].startsWith('//') ? `https:${frameMatch[1]}` : frameMatch[1]);
+
+	if (embedUrl.hostname === 'www.youtube.com' || embedUrl.hostname === 'youtube.com') {
+		embedUrl.hostname = 'www.youtube-nocookie.com';
+	}
+
+	if (window.location.origin !== 'null') {
+		embedUrl.searchParams.set('origin', window.location.origin);
+	}
+
+	return embedUrl.href;
+}
+
+function getPlainText(html) {
+	if (!html) {
+		return '';
+	}
+
+	return new DOMParser().parseFromString(html, 'text/html').body.textContent.trim();
+}
+
 function closeModal() {
 	imageModal.hidden = true;
+	modalVideo.pause();
+	modalVideo.removeAttribute('src');
+	modalVideo.load();
+	modalVideoFrame.removeAttribute('src');
 	if (lastFocusedGalleryItem) {
 		lastFocusedGalleryItem.focus();
 	}
