@@ -2,7 +2,7 @@
   "name": "NASA Space Explorer",
   "short_name": "NASA Space Explorer",
   "description": "An app to explore NASA space data",
-  "start_url": "./index.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f1f1f1",

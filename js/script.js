@@ -219,7 +219,7 @@ document.addEventListener('keydown', (event) => {
 if ('serviceWorker' in navigator) {
 	window.addEventListener('load', () => {
 		navigator.serviceWorker
-    .register('/service-worker.js')
+    .register('./service-worker.js')
     .then((reg) => console.log("[App] Service worker registered:", reg.scope))
     .catch((err) => console.error("[App] Service worker registration failed:", err));
 	});
@@ -266,7 +266,7 @@ installDismissButton.addEventListener('click', () => {
 });
 
 function requestNotificationPermission() {
-	if ('Notification' in window) {
+	if (!('Notification' in window)) {
     return;
 	}
   Notification.requestPermission().then((permission) => {
@@ -274,7 +274,7 @@ function requestNotificationPermission() {
     if (permission === 'granted') {
       new Notification("Space Explorer", {
         body: "Notifications are on!",
-        icon: "icons/icon-192.png"
+        icon: "./icons/icon-192.png"
       });
     }
   });

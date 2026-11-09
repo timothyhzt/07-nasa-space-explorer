@@ -373,3 +373,7 @@ button:disabled {
 .offline-banner.hidden {
   display: none;
 }
+
+.hidden {
+  display: none;
+}
