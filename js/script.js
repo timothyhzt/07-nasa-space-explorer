@@ -224,3 +224,58 @@ if ('serviceWorker' in navigator) {
     .catch((err) => console.error("[App] Service worker registration failed:", err));
 	});
 }
+
+const offlineBanner = document.getElementById('offline-banner');
+
+function updateOfflineBanner() {
+	if (navigator.onLine) {
+		offlineBanner.classList.add('hidden');
+	} else {
+		offlineBanner.classList.remove('hidden');
+	}
+}
+
+window.addEventListener('online', updateOfflineBanner);
+window.addEventListener('offline', updateOfflineBanner);
+updateOfflineBanner();
+
+
+let deferredInstallPrompt = null;
+const installBanner = document.getElementById('install-banner');
+const installYesButton = document.getElementById('install-yes');
+const installDismissButton = document.getElementById('install-dismiss');
+
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault();
+	deferredInstallPrompt = event;
+	installBanner.classList.remove('hidden');
+});
+
+installYesButton.addEventListener('click', async () => {
+	installBanner.classList.add('hidden');
+  if (!deferredInstallPrompt) return;
+
+  deferredInstallPrompt.prompt();
+  const {outcome} = await deferredInstallPrompt.userChoice;
+  console.log(`[App] Install prompt outcome:`, {outcome});
+  deferredInstallPrompt = null;
+});
+
+installDismissButton.addEventListener('click', () => {
+	installBanner.classList.add('hidden');
+});
+
+function requestNotificationPermission() {
+	if ('Notification' in window) {
+    return;
+	}
+  Notification.requestPermission().then((permission) => {
+    console.log(`[App] Notification permission:`, {permission});
+    if (permission === 'granted') {
+      new Notification("Space Explorer", {
+        body: "Notifications are on!",
+        icon: "icons/icon-192.png"
+      });
+    }
+  });
+};

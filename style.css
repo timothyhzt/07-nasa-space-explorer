@@ -368,3 +368,8 @@ button:disabled {
     transition-duration: 0.01ms !important;
   }
 }
+
+
+.offline-banner.hidden {
+  display: none;
+}
