@@ -214,3 +214,13 @@ document.addEventListener('keydown', (event) => {
 		closeModal();
 	}
 });
+
+
+if ('serviceWorker' in navigator) {
+	window.addEventListener('load', () => {
+		navigator.serviceWorker
+    .register('/service-worker.js')
+    .then((reg) => console.log("[App] Service worker registered:", reg.scope))
+    .catch((err) => console.error("[App] Service worker registration failed:", err));
+	});
+}
