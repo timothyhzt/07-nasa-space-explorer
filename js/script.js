@@ -289,19 +289,20 @@ function requestNotificationPermission() {
     }
   });
 };
-
 const isIOS =
-    /iPad|iPhone|iPod/.test(navigator.userAgent);
+    /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
 const isStandalone =
     window.matchMedia('(display-mode: standalone)').matches ||
     window.navigator.standalone === true;
 
 if (isIOS && !isStandalone) {
-    installBanner.classList.remove('hidden');
+    console.log('[App] iOS detected — showing install instructions');
 
     installBanner.querySelector('span').textContent =
         'To install: tap Share, then "Add to Home Screen".';
 
     installYesButton.style.display = 'none';
+    installBanner.classList.remove('hidden');
 }
