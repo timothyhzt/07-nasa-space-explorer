@@ -36,7 +36,17 @@ async function getSpaceImages() {
 		return;
 	}
 
-	const requestUrl = `${apiUrl}?api_key=${apiKey}&start_date=${startDate}&end_date=${endDate}`;
+	const formatNasaDate = (date) => {
+    return date.replaceAll('-', '').slice(2);
+};
+
+const nasaStartDate = formatNasaDate(startDate);
+const nasaEndDate = formatNasaDate(endDate);
+
+const requestUrl =
+    `${apiUrl}?date_from=${nasaStartDate}&date_to=${nasaEndDate}`;
+
+console.log('Requesting:', requestUrl);
 
 	gallery.innerHTML = '<p class="status-message">🔄 Loading space photos...</p>';
 	getImagesButton.disabled = true;
